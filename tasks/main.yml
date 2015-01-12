@@ -1,0 +1,21 @@
+---
+# Kevin M. Meziere <kmeziere@jpcatholic.com>
+# Copyright 2015, John Paul the Great Catholic University
+
+- name: Lookup version of Snarl
+  shell: pkgin list | grep fifo-snarl | awk '{print $1}'
+  register: snarl_version_installed
+  changed_when: snarl_version_installed.stdout != '{{snarl_version_required}}'
+  ignore_errors: True
+
+- name: Install/Upgrade Snarl
+  command: pkg_add -u http://release.project-fifo.net/pkg/'{{snarl_release}}'/'{{snarl_version_required}}'.tgz 
+  when: snarl_version_installed.stdout != '{{snarl_version_required}}'
+
+- name: Configure Snarl
+  template: src=snarl-config.j2 dest=/opt/local/fifo-snarl/etc/snarl.conf backup=yes
+  notify: Bounce Snarl
+
+- name: Enable Snarl
+  service: name=snarl state=started enabled=yes
+  when: "'snarl_no_start' not in group_names"
