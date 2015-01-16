@@ -16,6 +16,10 @@
   template: src=snarl-config.j2 dest=/opt/local/fifo-snarl/etc/snarl.conf backup=yes
   notify: Bounce Snarl
 
+- name: Enable EPMD
+  service: name=epmd state=started enabled=yes
+  when: "'snarl_no_start' not in {{ group_names }}"
+
 - name: Enable Snarl
   service: name=snarl state=started enabled=yes
   when: "'snarl_no_start' not in group_names"
