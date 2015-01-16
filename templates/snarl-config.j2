@@ -654,6 +654,6 @@ snmp.config_dir = snmp/conf/
 snmp.data_dir = /var/db/snarl
 
 
-{% if ansible_fqdn in groups['no_snarl_mdns'] %}
+{% if 'no_snarl_mdns' in group_names %}
 mdns.server = disabled
 {% endif %}

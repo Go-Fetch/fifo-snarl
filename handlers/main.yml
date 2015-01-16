@@ -4,4 +4,4 @@
 
 - name: Bounce Snarl
   service: name=snarl state=restarted enabled=yes
-  when: "'snarl_no_start' not in group_names"
+  when: "'snarl_no_start' not in {{ group_names }}"
