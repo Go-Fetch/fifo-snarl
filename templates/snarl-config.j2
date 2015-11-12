@@ -154,6 +154,41 @@ service = snarl
 ## Acceptable values:
 ##   - an integer
 ## w = 3
+## Schema directory
+
+## 
+## Default: ./share/schema
+## 
+## Acceptable values:
+##   - text
+schema_dir = ./share/schema
+
+## 
+## Default: 1h
+## 
+## Acceptable values:
+##   - a time duration with units, e.g. '10s' for 10 seconds
+oauth2.expiry_time = 1h
+
+## 
+## Acceptable values:
+##   - a time duration with units, e.g. '10s' for 10 seconds
+## oauth2.password_credentials.expiry_time = 2h
+
+## 
+## Acceptable values:
+##   - a time duration with units, e.g. '10s' for 10 seconds
+## oauth2.client_credentials.expiry_time = 1d
+
+## 
+## Acceptable values:
+##   - a time duration with units, e.g. '10s' for 10 seconds
+## oauth2.refresh_token.expiry_time = 30d
+
+## 
+## Acceptable values:
+##   - a time duration with units, e.g. '10s' for 10 seconds
+## oauth2.code_grant.expiry_time = 10m
 
 ## Name of the Erlang node
 ## 
@@ -292,7 +327,7 @@ anti_entropy.bloomfilter = on
 ## if you plan to expand your system please set it higher and reads
 ## the manual at http://bit.ly/1ciKRkS
 ## 
-## Default: 8
+## Default: 64
 ## 
 ## Acceptable values:
 ##   - an integer
@@ -327,6 +362,15 @@ anti_entropy.bloomfilter = on
 ##   - the path to a file
 ## ssl.cacertfile = $(platform_etc_dir)/cacertfile.pem
 
+## handoff.ip is the network address that Riak binds to for
+## intra-cluster data handoff.
+## 
+## Default: 127.0.0.1
+## 
+## Acceptable values:
+##   - text
+handoff.ip = 127.0.0.1
+
 ## DTrace support
 ## Do not enable 'dtrace' unless your Erlang/OTP
 ## runtime is compiled to support DTrace.  DTrace is
@@ -338,7 +382,7 @@ anti_entropy.bloomfilter = on
 ## 
 ## Acceptable values:
 ##   - one of: on, off
-dtrace = off
+dtrace = on
 
 ## Platform-specific installation paths (substituted by rebar)
 ## 
@@ -391,6 +435,13 @@ platform_log_dir = /var/log/snarl
 ## file: the file specified by log.console.file
 ## console : standard out
 ## both : log.console.file and standard out.
+## 
+## Default: snarl
+## 
+## Acceptable values:
+##   - text
+log.service = snarl
+
 ## 
 ## Default: file
 ## 
@@ -454,19 +505,45 @@ log.watchdog.level = error
 ##   - text
 log.watchdog.cluster = fifo
 
-## the log level of the watchdog log
-## 
-## Default: snarl
-## 
-## Acceptable values:
-##   - text
-log.watchdog.service = snarl
-
 ## The ip of the watchdog server
 ## 
 ## Acceptable values:
 ##   - an IP/port pair, e.g. 127.0.0.1:10011
 ## log.watchdog.host.name = 127.0.0.1:4444
+
+## The ip of the graylog server
+## 
+## Default: off
+## 
+## Acceptable values:
+##   - an IP/port pair, e.g. 127.0.0.1:10011
+##   - the text "off"
+## log.graylog.host = 127.0.0.1:12201
+
+## the log level of the graylog log
+## 
+## Default: info
+## 
+## Acceptable values:
+##   - one of: debug, info, warning, error
+log.graylog.level = info
+
+## The ip of the graylog server
+## 
+## Default: off
+## 
+## Acceptable values:
+##   - an IP/port pair, e.g. 127.0.0.1:10011
+##   - the text "off"
+## log.logstash.host = 127.0.0.1:9125
+
+## the log level of the graylog log
+## 
+## Default: info
+## 
+## Acceptable values:
+##   - one of: debug, info, warning, error
+log.logstash.level = info
 
 ## Whether to write a crash log, and where.
 ## Commented/omitted/undefined means no crash logger.
@@ -538,14 +615,6 @@ log.error.messages_per_second = 100
 ##   - text
 db.dir = /var/db/snarl
 
-## Default database destination
-## 
-## Default: leveldb
-## 
-## Acceptable values:
-##   - one of: leveldb, hanoidb, bitcask
-db.backend = leveldb
-
 ## leveldb data_root
 ## 
 ## Default: /var/db/snarl/leveldb
@@ -601,7 +670,7 @@ leveldb.compression = off
 ## 
 ## Acceptable values:
 ##   - an IP/port pair, e.g. 127.0.0.1:10011
-## folsom_ddb.ip = 127.0.0.1:4444
+## folsom_ddb.ip = 127.0.0.1:5555
 
 ## The bucket to store folsom data in.
 ## 
@@ -614,11 +683,11 @@ folsom_ddb.bucket = fifo
 ## The prefix that is added to each metric, in total the metric
 ## will be contructed [<PREFIX> | <Metric Path>]
 ## 
-## Default: sniffle
+## Default: snarl@127.0.0.1
 ## 
 ## Acceptable values:
 ##   - text
-folsom_ddb.prefix = sniffle
+folsom_ddb.prefix = snarl@127.0.0.1
 
 ## The interval in which folsom data is checked, default is 1 Second.
 ## 
@@ -652,7 +721,6 @@ snmp.config_dir = snmp/conf/
 ## Acceptable values:
 ##   - text
 snmp.data_dir = /var/db/snarl
-
 
 {% if 'no_snarl_mdns' in group_names %}
 mdns.server = disabled
