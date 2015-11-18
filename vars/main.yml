@@ -5,3 +5,4 @@
 snarl_release: rel
 snarl_version_required: fifo-snarl-0.7.0p5
 snarl_cookie: <<snarl_cookie>>
+fifo_gpg_keyid: BB975564
