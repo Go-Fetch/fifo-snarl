@@ -3,25 +3,13 @@
 # Copyright 2015, John Paul the Great Catholic University
 
 - name: Lookup version of Snarl
-  shell: "pkgin list | grep fifo-snarl | awk '{print $1}'"
+  shell: "pkgin list | grep fifo-snarl | awk -F'[;]' '{print $1}'"
   register: snarl_version_installed
   changed_when: "snarl_version_installed.stdout != '{{ snarl_version_required }}'"
   ignore_errors: True
 
-- name: Check for Project Fifo GPG Key
-  shell: "gpg --keyring /opt/local/etc/gnupg/pkgsrc.gpg --fingerprint | grep '{{ fifo_gpg_keyid }}'"
-  register: fifo_gpg_key
-  changed_when: fifo_gpg_key.rc != 0
-  ignore_errors: True
-  when: snarl_version_installed.stdout != "{{ snarl_version_required }}"
-
-- name: Install Project Fifo GPG Key
-  shell: "curl https://project-fifo.net/fifo.gpg | gpg --primary-keyring /opt/local/etc/gnupg/pkgsrc.gpg --import"
-  when: fifo_gpg_key.rc != 0
-
-- name: Install/Upgrade Snarl
-  command: "pkg_add -u http://release.project-fifo.net/pkg/'{{ snarl_release }}'/'{{ snarl_version_required }}'.tgz"
-  when: snarl_version_installed.stdout != "{{ snarl_version_required }}"
+- include: install.yml
+  when: "snarl_version_installed.stdout != '{{ snarl_version_required }}'"
 
 - name: Configure Snarl
   template: src=snarl-config.j2 dest=/opt/local/fifo-snarl/etc/snarl.conf backup=yes
